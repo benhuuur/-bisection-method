@@ -1,0 +1,15 @@
+C:\Users\disrct\Desktop\AI-methods\obj\Debug\net7.0\AI-methods.csproj.AssemblyReference.cache
+C:\Users\disrct\Desktop\AI-methods\obj\Debug\net7.0\AI-methods.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\disrct\Desktop\AI-methods\obj\Debug\net7.0\AI-methods.AssemblyInfoInputs.cache
+C:\Users\disrct\Desktop\AI-methods\obj\Debug\net7.0\AI-methods.AssemblyInfo.cs
+C:\Users\disrct\Desktop\AI-methods\obj\Debug\net7.0\AI-methods.csproj.CoreCompileInputs.cache
+C:\Users\disrct\Desktop\AI-methods\bin\Debug\net7.0\AI-methods.exe
+C:\Users\disrct\Desktop\AI-methods\bin\Debug\net7.0\AI-methods.deps.json
+C:\Users\disrct\Desktop\AI-methods\bin\Debug\net7.0\AI-methods.runtimeconfig.json
+C:\Users\disrct\Desktop\AI-methods\bin\Debug\net7.0\AI-methods.dll
+C:\Users\disrct\Desktop\AI-methods\bin\Debug\net7.0\AI-methods.pdb
+C:\Users\disrct\Desktop\AI-methods\obj\Debug\net7.0\AI-methods.dll
+C:\Users\disrct\Desktop\AI-methods\obj\Debug\net7.0\refint\AI-methods.dll
+C:\Users\disrct\Desktop\AI-methods\obj\Debug\net7.0\AI-methods.pdb
+C:\Users\disrct\Desktop\AI-methods\obj\Debug\net7.0\AI-methods.genruntimeconfig.cache
+C:\Users\disrct\Desktop\AI-methods\obj\Debug\net7.0\ref\AI-methods.dll
