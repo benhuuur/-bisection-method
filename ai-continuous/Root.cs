@@ -30,12 +30,12 @@ namespace AIContinuos
                     break;
 
                 var fc = function(c);
-                var fb = function(b);
+    
 
                 if (Math.Abs(fc) < tol)
                     break;
 
-                if (Math.Sign(fc) == Math.Sign(fb))
+                if (Math.Sign(fc) == Math.Sign(fcurrB))
                     currB = c;
                 else
                     currA = c;
@@ -63,19 +63,21 @@ namespace AIContinuos
                 var half = diff / 2.0;
                 c = a + half;
 
-                if(currB - currA < tol * 2.0)
-                    break;
 
                 var fc = function(c);
                 var fb = function(b);
 
-                if(Math.Abs(fc) < tol)
-                    break;
 
                 if (Math.Sign(fc) == Math.Sign(fb))
                     currB = c;
                 else
                     currA = c;
+                
+                if(Math.Abs(fc) < tol)
+                    break;
+                
+                if(currB - currA < tol * 2.0)
+                    break;
             }
             WriteLine($"Duration: {(DateTime.Now - dateTime).TotalMilliseconds}");
             return c;
