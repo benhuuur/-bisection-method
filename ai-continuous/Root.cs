@@ -44,7 +44,8 @@ namespace AIContinuos
             Func<double, double> function,
             double a,
             double b,
-            double tol = 1e-4,
+            double atol = 1e-4,
+            double rtol = 1e-4,
             int maxIter = 1_000
         )
         {
@@ -66,10 +67,10 @@ namespace AIContinuos
                 else
                     currA = c;
 
-                if (Math.Abs(fc) < tol)
+                if (Math.Abs(fc) < atol)
                     break;
 
-                if (currB - currA < tol * 2.0)
+                if (currB - currA < rtol * 2.0)
                     break;
             }
             return c;
@@ -88,7 +89,11 @@ namespace AIContinuos
 
             for (int i = 0; i < maxIter; i++)
             {
-                c -= function(c) / der(c);
+                var fc = function(c);
+                c -= fc / der(c);
+
+                if (Math.Abs(fc) < atol)
+                    break;
             }
 
             return c;
