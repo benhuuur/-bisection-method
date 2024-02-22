@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 
 namespace AIContinuos;
 
@@ -27,13 +28,40 @@ public static class Optimize
     {
         double xp = x0;
         double diff = Diff.Differentiate5P(function, xp);
-        
+
         while (Math.Abs(diff) > atol)
         {
             diff = Diff.Differentiate5P(function, xp);
             xp -= diff * lr;
         }
 
+        return xp;
+    }
+
+    // multiplicação é 4x mais rápido que divisão
+    public static double[] GradientDescent(
+        Func<double[], double> function,
+        double[] x0,
+        double lr = 1e-2,
+        double atol = 1e-4
+    )
+    {
+        var dim = x0.Length;
+        var xp = (double[])x0.Clone();
+        var diff = Diff.Gradient(function, xp);
+        double diffNorm;
+
+        do
+        {
+            diff = Diff.Gradient(function, xp);
+            diffNorm = 0.0;
+
+            for (int i = 0; i < dim; i++)
+            {
+                xp[i] -= diff[i] * lr;
+                diffNorm += Math.Abs(diff[i]);
+            }
+        } while (diffNorm > atol * dim);
         return xp;
     }
 
