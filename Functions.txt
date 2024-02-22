@@ -1,0 +1,17 @@
+double myFunction(double x)
+=> x + 1;
+
+double myFunction(double x)
+=> (x - 1) * (x - 1) + Math.Sin(x * x * x);
+
+double myFunction(double x)
+=>(Math.Sqrt(Math.Abs(x)) - 5) * x + 10;
+
+double myDer(double x)
+=> 1 / 2 * Math.Sqrt(Math.Abs(x)) * x + (Math.Sqrt(Math.Abs(x)) - 5);
+
+double myFunction(double[] x)
+=> x[0] * x[0] + x[1] * x[1];
+
+double myFunction(double[] x)
+=> Math.Pow((x[0] + x[1] * 2 - 7), 2) + Math.Pow((x[0] * 2 + x[1] - 5), 2);

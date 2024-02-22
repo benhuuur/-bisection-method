@@ -14,7 +14,7 @@ public static class Optimize
         int maxIter = 1_000
     )
     {
-        Func<double, double> diffFunction = x => Diff.Differentiate5P(function, x, h);
+        Func<double, double> diffFunction = x => Diff.Differentiate5P(function, x, 2.0 * h);
         Func<double, double> diffSecondFunction = x => Diff.Differentiate5P(diffFunction, x, h);
         return Root.Newton(diffFunction, diffSecondFunction, x0, atol, maxIter);
     }

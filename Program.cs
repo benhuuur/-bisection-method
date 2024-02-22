@@ -2,33 +2,15 @@
 using AIContinuos;
 using static System.Console;
 
-// double myFunction(double x)
-// {
-//     return x + 1;
-// }
-
-// double myFunction(double x)
-// {
-//     return (x - 1) * (x - 1) + Math.Sin(x * x * x);
-// }
-
-// double myFunction(double x)
-// {
-//     return (Math.Sqrt(Math.Abs(x)) - 5) * x + 10;
-// }
-// double myDer(double x)
-// {
-//     return 1 / 2 * Math.Sqrt(Math.Abs(x)) * x + (Math.Sqrt(Math.Abs(x)) - 5);
-// }
-
-// double myFunction(double[] x)
-// {
-//     return x[0] * x[0] + x[1] * x[1];
-// }
-
-double myFunction(double[] x)
+double Rosenbrock(double[] x)
 {
-    return Math.Pow((x[0] + x[1] * 2 - 7), 2) + Math.Pow((x[0] * 2 + x[1] - 5), 2);
+    var n = x.Length - 1;
+    double sum = 0;
+
+    for (int i = 0; i < n; i++)
+        sum += 100 * (x[i + 1] - x[i] * x[i]) * (x[i + 1] - x[i] * x[i]) + (1 - x[i]) * (1 - x[i]);
+
+    return sum;
 }
 
 DateTime dateTime = DateTime.Now;
@@ -63,9 +45,14 @@ DateTime dateTime = DateTime.Now;
 // WriteLine(sol);
 // WriteLine($"Duration: {(DateTime.Now - dateTime).TotalMilliseconds}");
 
-dateTime = DateTime.Now;
+// dateTime = DateTime.Now;
+// double[] min = { 10, 10 };
+// var sol = Optimize.GradientDescent(myFunction, min);
+// WriteLine($"{sol[0]},{sol[1]}");
+// WriteLine($"Duration: {(DateTime.Now - dateTime).TotalMilliseconds}");
 
-double[] min = { 10, 10 };
-var sol = Optimize.GradientDescent(myFunction, min);
-WriteLine($"{sol[0]},{sol[1]}");
+dateTime = DateTime.Now;
+double[] min = { 1, 1 };
+var sol = Optimize.GradientDescent(Rosenbrock, min, lr: 1e-5, atol: 1e-9);
+WriteLine($"{sol[0]} : {sol[1]}");
 WriteLine($"Duration: {(DateTime.Now - dateTime).TotalMilliseconds}");
