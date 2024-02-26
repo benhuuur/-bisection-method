@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using AIContinuos;
 using static System.Console;
 
@@ -51,8 +53,17 @@ DateTime dateTime = DateTime.Now;
 // WriteLine($"{sol[0]},{sol[1]}");
 // WriteLine($"Duration: {(DateTime.Now - dateTime).TotalMilliseconds}");
 
-dateTime = DateTime.Now;
-double[] min = { 1, 1 };
-var sol = Optimize.GradientDescent(Rosenbrock, min, lr: 1e-5, atol: 1e-9);
+// dateTime = DateTime.Now;
+// double[] min = { 1, 1 };
+// var sol = Optimize.GradientDescent(Rosenbrock, min, lr: 1e-5, atol: 1e-9);
+// WriteLine($"{sol[0]} : {sol[1]}");
+// WriteLine($"Duration: {(DateTime.Now - dateTime).TotalMilliseconds}");
+
+var sw = new Stopwatch();
+sw.Start();
+List<double[]> bounds = new() { new double[] { -10.0, 10.0 }, new double[] { -10.0, 10.0 } };
+var diffEvolution = new DiffEvolution(Rosenbrock, 1_000, bounds);
+var sol = diffEvolution.Optimize(10_000);
+sw.Stop();
 WriteLine($"{sol[0]} : {sol[1]}");
-WriteLine($"Duration: {(DateTime.Now - dateTime).TotalMilliseconds}");
+WriteLine($"Duration: {sw.Elapsed}");
