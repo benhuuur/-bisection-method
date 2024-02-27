@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
-using Microsoft.VisualBasic;
 
-namespace AIContinuos;
+namespace AIContinuous;
 
 public class DiffEvolution
 {
@@ -12,25 +10,37 @@ public class DiffEvolution
     protected List<double[]> Individuals { get; set; }
     protected Func<double[], double> Fitness { get; }
     protected int Npop { get; set; }
-    protected double Mutation { get; set; }
+    protected Func<double[], double> Restriction { get; set; }
+    protected double MutationMin { get; set; }
+    protected double MutationMax { get; set; }
     protected int Dimension { get; set; }
-    protected double BestIndividualFitness { get; set; } = double.MaxValue;
     protected int BestIndividualIndex { get; set; }
     protected List<double[]> Bounds { get; set; }
+    private double[] IndividualsRestrictions { get; set; }
+    private double[] IndividualsFitness { get; set; }
+    public double Recombination { get; set; }
 
     public DiffEvolution(
         Func<double[], double> fitness,
+        Func<double[], double> restriction,
         int npop,
         List<double[]> bounds,
-        double mutation = 0.7
+        double recombination = 0.8,
+        double mutationMin = 0.5,
+        double mutationMax = 0.9
     )
     {
-        this.Individuals = new(npop);
         this.Fitness = fitness;
+        this.Restriction = restriction;
         this.Npop = npop;
+        this.Individuals = new(npop);
         this.Dimension = bounds.Count;
         this.Bounds = bounds.ToList();
-        this.Mutation = mutation;
+        this.Recombination = recombination;
+        this.MutationMax = mutationMax;
+        this.MutationMin = mutationMin;
+        this.IndividualsRestrictions = new double[npop];
+        this.IndividualsFitness = new double[npop];
     }
 
     private void GeneratePopulation()
@@ -45,13 +55,17 @@ public class DiffEvolution
                     this.Bounds[j][0],
                     this.Bounds[j][1]
                 );
+
+            IndividualsRestrictions[i] = Restriction(Individuals[i]);
+            IndividualsFitness[i] =
+                IndividualsRestrictions[i] <= 0.0 ? Fitness(Individuals[i]) : double.MaxValue;
         }
         FindBestIndividual();
     }
 
     private void FindBestIndividual()
     {
-        var fitnessBest = this.BestIndividualFitness;
+        var fitnessBest = this.IndividualsFitness[BestIndividualIndex];
         for (int i = 0; i < Npop; i++)
         {
             var fitnessCurrent = this.Fitness(this.Individuals[this.BestIndividualIndex]);
@@ -62,26 +76,48 @@ public class DiffEvolution
                 fitnessBest = fitnessCurrent;
             }
         }
-        this.BestIndividualFitness = fitnessBest;
+        this.IndividualsFitness[BestIndividualIndex] = fitnessBest;
     }
 
-    private double[] Mutate(double[] individual)
+    private double[] Mutate(int index)
     {
-        var newIndivdual = new double[this.Dimension];
+        int individualRand1;
+        int individualRand2;
 
-        newIndivdual = Individuals[this.BestIndividualIndex];
+        do individualRand1 = Random.Shared.Next(Npop);
+        while (individualRand1 == index);
 
-        var individualRand1 = Random.Shared.Next(Npop);
-        var individualRand2 = Random.Shared.Next(Npop);
+        do individualRand2 = Random.Shared.Next(Npop);
+        while (individualRand1 == individualRand2);
 
+        var newIndivdual = (double[])Individuals[BestIndividualIndex].Clone();
         for (int i = 0; i < Dimension; i++)
         {
             newIndivdual[i] +=
-                this.Mutation
+                Utils.Rescale(Random.Shared.NextDouble(), MutationMin, MutationMax)
                 * (this.Individuals[individualRand1][i] - this.Individuals[individualRand2][i]);
         }
 
         return newIndivdual;
+    }
+
+    protected double[] Crossover(int index)
+    {
+        var trial = Mutate(index);
+        var trial2 = (double[])Individuals[index].Clone();
+
+        for (int i = 0; i < Dimension; i++)
+        {
+            if (
+                !(
+                    (Random.Shared.NextDouble() < this.Recombination)
+                    || (i == Random.Shared.Next(Dimension))
+                )
+            )
+                trial2[i] = trial[i];
+        }
+
+        return trial2;
     }
 
     protected void Iterate()
@@ -89,9 +125,22 @@ public class DiffEvolution
         for (int i = 0; i < Npop; i++)
         {
             var current = Individuals[i];
-            var trial = Mutate(current);
-            if(Fitness(trial) < Fitness(current))
+            var trial = Crossover(i);
+
+            var restTrial = this.Restriction(trial);
+            var fitnessTrial = restTrial <= 0.0 ? this.Fitness(trial) : double.MaxValue;
+            var restIndividual = this.IndividualsRestrictions[i];
+
+            if (
+                (restTrial < restIndividual && restIndividual > 0.0)
+                || (restTrial <= 0.0 && restIndividual > 0.0)
+                || (restTrial <= 0.0 && fitnessTrial < IndividualsFitness[i])
+            )
+            {
                 Individuals[i] = trial;
+                IndividualsFitness[i] = fitnessTrial;
+                IndividualsRestrictions[i] = restTrial;
+            }
         }
 
         FindBestIndividual();

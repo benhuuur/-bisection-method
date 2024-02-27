@@ -1,19 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using AIContinuos;
+using AIContinuous;
+using AIContinuous.Rocket;
 using static System.Console;
-
-double Rosenbrock(double[] x)
-{
-    var n = x.Length - 1;
-    double sum = 0;
-
-    for (int i = 0; i < n; i++)
-        sum += 100 * (x[i + 1] - x[i] * x[i]) * (x[i + 1] - x[i] * x[i]) + (1 - x[i]) * (1 - x[i]);
-
-    return sum;
-}
 
 DateTime dateTime = DateTime.Now;
 
@@ -60,10 +50,26 @@ DateTime dateTime = DateTime.Now;
 // WriteLine($"Duration: {(DateTime.Now - dateTime).TotalMilliseconds}");
 
 var sw = new Stopwatch();
+var Rocket = new Rocket();
 sw.Start();
-List<double[]> bounds = new() { new double[] { -10.0, 10.0 }, new double[] { -10.0, 10.0 } };
-var diffEvolution = new DiffEvolution(Rosenbrock, 1_000, bounds);
-var sol = diffEvolution.Optimize(10_000);
+List<double[]> bounds = new();
+
+
+for (int i = 0; i < 20; i++)
+{
+    var bound = new double[] { 0, Utils.Rescale(Random.Shared.NextDouble(), 0.0, 3500.0) };
+    bounds.Add(bound);
+}
+
+double Restriction(double[] x)
+{
+    return -1.0;
+}
+
+
+
+var diffEvolution = new DiffEvolution(Rocket.Launch, Restriction, 200, bounds);
+var sol = diffEvolution.Optimize(4_000);
 sw.Stop();
 WriteLine($"{sol[0]} : {sol[1]}");
 WriteLine($"Duration: {sw.Elapsed}");

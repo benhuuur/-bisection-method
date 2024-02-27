@@ -1,7 +1,7 @@
 using System;
 using static System.Console;
 
-namespace AIContinuos;
+namespace AIContinuous;
 
 public static class Root
 {

@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace AIContinuos;
+namespace AIContinuous;
 
 // metodos de inflecção
 public static class Optimize

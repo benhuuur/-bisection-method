@@ -1,6 +1,6 @@
 using System;
 
-namespace AIContinuos;
+namespace AIContinuous;
 
 public static class Diff
 {
