@@ -40,11 +40,12 @@ public class Rocket
         return (T + D + W) / currentM;
     }
 
-    private double GetMassFlow(double t) => Interp1D.Linear(TimeData, MassFlowData, t);
+    private double GetMassFlow(double t) =>
+        t > TimeData[^1] ? 0 : Interp1D.Linear(TimeData, MassFlowData, t);
 
     private double GetTotalMass() => this.DryMass + this.Fuel;
 
-    private double GetThrust(double me) => me * Ve;
+    private double GetThrust(double me) => me * this.Ve;
 
     private double GetDrag(double height, double velocity)
     {
@@ -54,7 +55,7 @@ public class Rocket
         return -0.5
             * currentCd
             * Atmosphere.Density(height)
-            * CrossSection
+            * this.CrossSection
             * velocity
             * velocity
             * vector;
@@ -65,10 +66,10 @@ public class Rocket
 
     private static double GetVelocity(double a, double dt) => a * dt;
 
-    private void UpdateHeight(double dt) => Height += Velocity * dt;
+    private void UpdateHeight(double dt) => this.Height += this.Velocity * dt;
 
     private void UpdateFuel(double t, double dt) =>
-        this.Fuel -= 0.5 * (dt * GetMassFlow(t) + GetMassFlow(t + dt));
+        this.Fuel -= 0.5 * dt * (GetMassFlow(t) + GetMassFlow(t + dt));
 
     public double Launch(double time, double dt = 1e-1)
     {

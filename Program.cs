@@ -50,25 +50,34 @@ DateTime dateTime = DateTime.Now;
 // WriteLine($"{sol[0]} : {sol[1]}");
 // WriteLine($"Duration: {(DateTime.Now - dateTime).TotalMilliseconds}");
 
+double LaunchFunction(double[] x)
+{
+    double[] timeData = Space.Linear(0.0, 50.0, x.Length);
+
+    var Rocket = new Rocket(750.0, 0.6, 1916, 0.8, timeData, x);
+    return Rocket.LaunchUntilMax();
+}
+
 var sw = new Stopwatch();
 sw.Start();
 
-double[] massFlowData = Space.Uniform(17.5, 11);
-double[] timeData = Space.Linear(0.0, 200.0, 11);
+List<double[]> bounds = new();
 
-var Rocket = new Rocket(750.0, 0.6, 1916, 0.8, timeData, massFlowData);
-WriteLine(Rocket.LaunchUntilMax());
+var bound = new double[] { 0, 3500 };
+bounds.Add(bound);
+bound = new double[] { 0, 3500 };
+bounds.Add(bound);
 
+double Restriction(double[] x)
+{
+    return -1.0;
+}
 
-// List<double[]> bounds = new();
-
-// double Restriction(double[] x)
-// {
-//     return -1.0;
-// }
-
-// var diffEvolution = new DiffEvolution(, Restriction, 200, bounds);
-// var sol = diffEvolution.Optimize(4_000);
-// sw.Stop();
-// WriteLine($"{sol[0]} : {sol[1]}");
-// WriteLine($"Duration: {sw.Elapsed}");
+var diffEvolution = new DiffEvolution(LaunchFunction, Restriction, 200, bounds);
+var sol = diffEvolution.Optimize(4_000);
+sw.Stop();
+for (int i = 0; i < sol.Length - 1; i++)
+{
+    WriteLine($"{sol[i]} : {sol[i + 1]}");
+}
+WriteLine($"Duration: {sw.Elapsed}");
