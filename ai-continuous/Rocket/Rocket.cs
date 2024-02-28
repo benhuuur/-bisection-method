@@ -4,11 +4,11 @@ using AIContinuous.Rocket;
 
 public class Rocket
 {
-    public double DryMass { get; set; } = 750.0;
-    public double Fuel { get; set; } = 3500.0;
-    public double CrossSection { get; set; } = Utils.CrossSection(0.6);
-    public double Cd0 { get; set; } = 0.8;
-    public double Ve { get; set; } = 1916.0;
+    public double DryMass { get; set; }
+    public double Fuel { get; set; }
+    public double CrossSection { get; set; }
+    public double Cd0 { get; set; }
+    public double Ve { get; set; }
     public double Height { get; private set; } = 0;
     public double Velocity { get; private set; } = 0;
     public double[] TimeData { get; set; }
@@ -72,8 +72,6 @@ public class Rocket
 
     public double Launch(double time, double dt = 1e-1)
     {
-        double oldH = this.Height;
-        double newH = this.Height;
         for (double i = 0.0; i < time; i += dt)
             FlyALittleBit(dt);
 
@@ -100,8 +98,6 @@ public class Rocket
     {
         var currentMe = GetMassFlow(this.Time);
 
-        UpdateFuel(this.Time, dt);
-
         var t = GetThrust(currentMe);
         var d = GetDrag(this.Height, this.Velocity);
         var w = GetWeight(GetTotalMass(), this.Height);
@@ -112,6 +108,9 @@ public class Rocket
         this.Velocity += v;
 
         UpdateHeight(dt);
+
+        UpdateFuel(this.Time, dt);
+
         this.Time += dt;
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using AIContinuous;
+using AIContinuous.Nuenv;
 using AIContinuous.Rocket;
 using static System.Console;
 
@@ -50,26 +51,24 @@ DateTime dateTime = DateTime.Now;
 // WriteLine($"Duration: {(DateTime.Now - dateTime).TotalMilliseconds}");
 
 var sw = new Stopwatch();
-var Rocket = new Rocket();
 sw.Start();
-List<double[]> bounds = new();
+
+double[] massFlowData = Space.Uniform(17.5, 11);
+double[] timeData = Space.Linear(0.0, 200.0, 11);
+
+var Rocket = new Rocket(750.0, 0.6, 1916, 0.8, timeData, massFlowData);
+WriteLine(Rocket.LaunchUntilMax());
 
 
-for (int i = 0; i < 20; i++)
-{
-    var bound = new double[] { 0, Utils.Rescale(Random.Shared.NextDouble(), 0.0, 3500.0) };
-    bounds.Add(bound);
-}
+// List<double[]> bounds = new();
 
-double Restriction(double[] x)
-{
-    return -1.0;
-}
+// double Restriction(double[] x)
+// {
+//     return -1.0;
+// }
 
-
-
-var diffEvolution = new DiffEvolution(Rocket.Launch, Restriction, 200, bounds);
-var sol = diffEvolution.Optimize(4_000);
-sw.Stop();
-WriteLine($"{sol[0]} : {sol[1]}");
-WriteLine($"Duration: {sw.Elapsed}");
+// var diffEvolution = new DiffEvolution(, Restriction, 200, bounds);
+// var sol = diffEvolution.Optimize(4_000);
+// sw.Stop();
+// WriteLine($"{sol[0]} : {sol[1]}");
+// WriteLine($"Duration: {sw.Elapsed}");
