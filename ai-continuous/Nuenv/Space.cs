@@ -5,10 +5,8 @@ namespace AIContinuous.Nuenv;
 
 public static class Space
 {
-    public static double[] Uniform(double value, int count)
-    {
-        return Enumerable.Repeat(value, count).ToArray();
-    }
+    public static double[] Uniform(double value, int count) =>
+        Enumerable.Repeat(value, count).ToArray();
 
     public static double[] Linear(double a, double b, int n)
     {
