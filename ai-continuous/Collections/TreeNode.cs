@@ -11,7 +11,7 @@ public class TreeNode<T> : INode<T>
     public List<TreeNode<T>> Children { get; set; }
 
     public TreeNode(
-        T value = default(T),
+        T value = default(T)!,
         TreeNode<T>? parent = null,
         List<TreeNode<T>> children = null!
     )
@@ -64,10 +64,7 @@ public class TreeNode<T> : INode<T>
         Children.Clear();
     }
 
-    public override string ToString()
-    {
-        return ToString("", true, true);
-    }
+    public override string ToString() => ToString("", true, true);
 
     private string ToString(string indent, bool isLast, bool isRoot)
     {

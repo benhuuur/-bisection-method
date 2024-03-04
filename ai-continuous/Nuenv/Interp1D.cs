@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 
 namespace AulasAI.Nuenv;
 
@@ -16,7 +17,7 @@ public static class Interp1D
             throw new ArgumentOutOfRangeException(nameof(query), $"query {query} is out of bounds");
         }
 
-        var index = Search.BinarySearch(x, query);
+        var index = Search.BinarySearch(x.ToList(), query);
 
         return y[index]
             + (y[index] - y[index - 1]) / (x[index] - x[index - 1]) * (query - x[index]);
@@ -34,7 +35,7 @@ public static class Interp1D
             throw new ArgumentOutOfRangeException(nameof(query), $"query {query} is out of bounds");
         }
 
-        var index = Search.BinarySearch(x, query) - 1;
+        var index = Search.BinarySearch(x.ToList(), query) - 1;
 
         if (index <= 1 || index >= x.Length - 2)
             return Linear(x, y, query, checkBounds);
@@ -80,7 +81,7 @@ public static class Interp1D
             throw new ArgumentOutOfRangeException(nameof(query), $"query {query} is out of bounds");
         }
 
-        var index = Search.BinarySearch(x, query);
+        var index = Search.BinarySearch(x.ToList(), query);
 
         var zeta = System.Math.Log(y[index] / y[index - 1]) / (x[index] - x[index - 1]);
 

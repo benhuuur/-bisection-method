@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using AulasAI.Collections;
-using AulasAI.Search;
 
 var tree = BuildTree();
 Console.WriteLine(tree);
+
+var found = Search.DepthFirstSearch(tree.Root, 9);
+Console.WriteLine(found);
+found = Search.BreadthFirstSearch(tree.Root, 9);
+Console.WriteLine(found);
 return;
 
 Tree<int> BuildTree()
@@ -42,4 +46,17 @@ Tree<int> BuildTree()
     var tree5 = new Tree<int>(root);
 
     return tree5;
+}
+
+Graph<string> BuildGraph()
+{
+    var graph = new Graph<string>("Detroit");
+    var chicago = new Node<string>("Chicago");
+    var buffalo = new Node<string>("Buffalo");
+    var cleveland = new Node<string>("Cleveland");
+    var portland = new Node<string>("Portland");
+    var boston = new Node<string>("Boston");
+ 
+
+    return graph;
 }

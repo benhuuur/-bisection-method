@@ -7,10 +7,7 @@ public class Tree<T>
     public TreeNode<T> Root { get; set; }
     public List<TreeNode<T>> Branches => Root.Children;
 
-    public Tree(TreeNode<T> root = null!)
-    {
-        Root = root;
-    }
+    public Tree(TreeNode<T> root = null!) => Root = root;
 
     public Tree<T> AddBranch(TreeNode<T> branch)
     {
@@ -28,8 +25,5 @@ public class Tree<T>
         return this;
     }
 
-    public override string ToString()
-    {
-        return Root.ToString();
-    }
+    public override string ToString() => Root.ToString();
 }
