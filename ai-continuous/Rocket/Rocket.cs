@@ -1,82 +1,97 @@
-using System.Runtime.InteropServices;
-using AIContinuous.Nuenv;
-using AIContinuous.Rocket;
+using AulasAI.Nuenv;
+
+namespace AulasAI.Rocket;
 
 public class Rocket
 {
     public double DryMass { get; set; }
-    public double Fuel { get; set; }
-    public double CrossSection { get; set; }
-    public double Cd0 { get; set; }
+    public double CrossSectionArea { get; set; }
     public double Ve { get; set; }
-    public double Height { get; private set; } = 0;
-    public double Velocity { get; private set; } = 0;
+    public double Cd0 { get; set; }
+    public double Time { get; set; }
+    public double Height { get; set; }
+    public double Velocity { get; set; }
+    public double Mass { get; set; }
     public double[] TimeData { get; set; }
     public double[] MassFlowData { get; set; }
-    public double Time { get; set; }
 
     public Rocket(
         double dryMass,
-        double diameter,
+        double crossSectionArea,
         double ve,
         double cd0,
         double[] timeData,
         double[] massFlowData
     )
     {
-        this.DryMass = dryMass;
-        this.CrossSection = Utils.CrossSection(diameter);
-        this.Ve = ve;
-        this.Cd0 = cd0;
-        this.TimeData = (double[])timeData.Clone();
-        this.MassFlowData = (double[])massFlowData.Clone();
-        this.Fuel = Integrate.Romberg(TimeData, MassFlowData);
-        this.Time = 0.0;
+        DryMass = dryMass;
+        CrossSectionArea = crossSectionArea;
+        Ve = ve;
+        Cd0 = cd0;
+        TimeData = (double[])timeData.Clone();
+        MassFlowData = (double[])massFlowData.Clone();
+
+        Time = 0.0;
+        Mass = DryMass + Integrate.Romberg(TimeData, MassFlowData);
     }
 
-    private double GetAcceleration(double T, double D, double W)
+    public double CalculateMassFlow(double t) =>
+        t > TimeData[^1] ? 0.0 : Interp1D.Linear(TimeData, MassFlowData, t);
+
+    public static double CalculateWeight(double h, double m) => -1.0 * m * Gravity.GetGravity(h);
+
+    public double CalculateDrag(double v, double h)
     {
-        var currentM = GetTotalMass();
-        return (T + D + W) / currentM;
+        var temperature = Atmosphere.Temperature(h);
+        var cd = Drag.Coefficient(v, temperature, Cd0);
+
+        var rho = Atmosphere.Density(h);
+
+        return -0.5 * cd * rho * CrossSectionArea * v * v * System.Math.Sign(v);
     }
 
-    private double GetMassFlow(double t) =>
-        t > TimeData[^1] ? 0 : Interp1D.Linear(TimeData, MassFlowData, t);
+    public double CalculateThrust(double t) => t > TimeData[^1] ? 0.0 : CalculateMassFlow(t) * Ve;
 
-    private double GetTotalMass() => this.DryMass + this.Fuel;
-
-    private double GetThrust(double me) => me * this.Ve;
-
-    private double GetDrag(double height, double velocity)
+    public double MomentumEq(double t)
     {
-        // velocity/Math.Abs(velocity)
-        var vector = velocity > 0 ? 1 : -1;
-        var currentCd = Drag.Coefficient(velocity, Atmosphere.Temperature(height), Cd0);
-        return -0.5
-            * currentCd
-            * Atmosphere.Density(height)
-            * this.CrossSection
-            * velocity
-            * velocity
-            * vector;
+        var thrust = CalculateThrust(t);
+        var drag = CalculateDrag(Velocity, Height);
+        var weight = CalculateWeight(Height, Mass);
+
+        return (thrust + drag + weight) / Mass;
     }
 
-    private static double GetWeight(double mass, double height) =>
-        -1.0 * mass * Gravity.GetGravity(height);
+    public void UpdateVelocity(double t, double dt)
+    {
+        var accel = MomentumEq(t);
+        Velocity += accel * dt;
+    }
 
-    private static double GetVelocity(double a, double dt) => a * dt;
+    public void UpdateHeight(double dt)
+    {
+        Height += Velocity * dt;
+    }
 
-    private void UpdateHeight(double dt) => this.Height += this.Velocity * dt;
+    public void UpdateMass(double t, double dt)
+    {
+        Mass -= 0.5 * dt * (CalculateMassFlow(t) + CalculateMassFlow(t + dt));
+    }
 
-    private void UpdateFuel(double t, double dt) =>
-        this.Fuel -= 0.5 * dt * (GetMassFlow(t) + GetMassFlow(t + dt));
+    public void FlyALittleBit(double dt)
+    {
+        UpdateVelocity(Time, dt);
+        UpdateHeight(dt);
+        UpdateMass(Time, dt);
+
+        Time += dt;
+    }
 
     public double Launch(double time, double dt = 1e-1)
     {
-        for (double i = 0.0; i < time; i += dt)
+        for (double t = 0.0; t < time; t += dt)
             FlyALittleBit(dt);
 
-        return this.Height;
+        return Height;
     }
 
     public double LaunchUntilMax(double dt = 1e-1)
@@ -84,7 +99,7 @@ public class Rocket
         do FlyALittleBit(dt);
         while (Velocity > 0.0);
 
-        return this.Height;
+        return Height;
     }
 
     public double LaunchUntilGround(double dt = 1e-1)
@@ -92,26 +107,6 @@ public class Rocket
         do FlyALittleBit(dt);
         while (Height > 0.0);
 
-        return this.Height;
-    }
-
-    public void FlyALittleBit(double dt)
-    {
-        var currentMe = GetMassFlow(this.Time);
-
-        var t = GetThrust(currentMe);
-        var d = GetDrag(this.Height, this.Velocity);
-        var w = GetWeight(GetTotalMass(), this.Height);
-
-        var a = GetAcceleration(t, d, w);
-        var v = GetVelocity(a, dt);
-
-        this.Velocity += v;
-
-        UpdateHeight(dt);
-
-        UpdateFuel(this.Time, dt);
-
-        this.Time += dt;
+        return Height;
     }
 }

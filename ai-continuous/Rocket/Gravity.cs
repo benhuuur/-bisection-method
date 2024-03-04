@@ -1,6 +1,4 @@
-namespace AIContinuous.Rocket;
-
-using System;
+namespace AulasAI.Rocket;
 
 public static class Gravity
 {
@@ -11,11 +9,13 @@ public static class Gravity
 
     public static double GetGravity(double height, double latitude = 0)
     {
-        var sin2Lat = Math.Pow(Math.Sin(latitude), 2.0);
-        var g0CorrectDenominator = Math.Sqrt(1.0 - GravityCorrectionDenominatorCoeff * sin2Lat);
+        var sin2Lat = System.Math.Pow(System.Math.Sin(latitude), 2.0);
+        var g0CorrectDenominator = System.Math.Sqrt(
+            1.0 - GravityCorrectionDenominatorCoeff * sin2Lat
+        );
         var g0Correct = G0 * (1.0 + GravityCorrectionCoeff * sin2Lat) / g0CorrectDenominator;
 
-        var g = g0Correct * Math.Pow(EarthRadius / (EarthRadius + height), 2);
+        var g = g0Correct * System.Math.Pow(EarthRadius / (EarthRadius + height), 2);
 
         return g;
     }

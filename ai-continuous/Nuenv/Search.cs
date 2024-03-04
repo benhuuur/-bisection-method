@@ -1,4 +1,4 @@
-namespace AIContinuous.Nuenv;
+namespace AulasAI.Nuenv;
 
 public static class Search
 {
@@ -13,13 +13,9 @@ public static class Search
             var midValue = x[mid];
 
             if (query > midValue)
-            {
                 low = mid;
-            }
             else
-            {
                 high = mid;
-            }
         }
 
         return high;

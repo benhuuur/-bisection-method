@@ -1,83 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using AIContinuous;
-using AIContinuous.Nuenv;
-using AIContinuous.Rocket;
-using static System.Console;
+using AulasAI.Collections;
+using AulasAI.Search;
 
-DateTime dateTime = DateTime.Now;
+var tree = BuildTree();
+Console.WriteLine(tree);
+return;
 
-// dateTime = DateTime.Now;
-//  var sol = Root.Bisection(myFunction, -11, +10);
-// WriteLine(sol);
-// WriteLine($"Duration: {(DateTime.Now - dateTime).TotalMilliseconds}");
-
-// dateTime = DateTime.Now;
-//  var sol = Root.FalsePosition(myFunction, -10, +10);
-// WriteLine(sol);
-// WriteLine($"Duration: {(DateTime.Now - dateTime).TotalMilliseconds}");
-
-// dateTime = DateTime.Now;
-//  var sol = Root.Newton(myFunction, myDer, 10.0);
-// WriteLine(sol);
-// WriteLine($"Duration: {(DateTime.Now - dateTime).TotalMilliseconds}");
-
-// dateTime = DateTime.Now;
-//  var sol = Root.Newton(myFunction, double (double x) => Diff.Differentiate3P(myFunction, x), 10.0);
-// WriteLine(sol);
-// WriteLine($"Duration: {(DateTime.Now - dateTime).TotalMilliseconds}");
-
-// dateTime = DateTime.Now;
-//  var sol = Optimize.Newton(myFunction, 1);
-// WriteLine(sol);
-// WriteLine($"Duration: {(DateTime.Now - dateTime).TotalMilliseconds}");
-
-// dateTime = DateTime.Now;
-//  var sol = Optimize.Min(myFunction, 10000);
-// WriteLine(sol);
-// WriteLine($"Duration: {(DateTime.Now - dateTime).TotalMilliseconds}");
-
-// dateTime = DateTime.Now;
-// double[] min = { 10, 10 };
-// var sol = Optimize.GradientDescent(myFunction, min);
-// WriteLine($"{sol[0]},{sol[1]}");
-// WriteLine($"Duration: {(DateTime.Now - dateTime).TotalMilliseconds}");
-
-// dateTime = DateTime.Now;
-// double[] min = { 1, 1 };
-// var sol = Optimize.GradientDescent(Rosenbrock, min, lr: 1e-5, atol: 1e-9);
-// WriteLine($"{sol[0]} : {sol[1]}");
-// WriteLine($"Duration: {(DateTime.Now - dateTime).TotalMilliseconds}");
-
-double LaunchFunction(double[] x)
+Tree<int> BuildTree()
 {
-    double[] timeData = Space.Linear(0.0, 50.0, x.Length);
+    // Tree 1 (root: 50)
+    var node = new TreeNode<int>(6);
+    node = new TreeNode<int>(21, children: new List<TreeNode<int>> { node });
+    var node2 = new TreeNode<int>(45);
+    node = new TreeNode<int>(12, children: new List<TreeNode<int>> { node, node2 });
+    node = new TreeNode<int>(50, children: new List<TreeNode<int>> { node });
 
-    var Rocket = new Rocket(750.0, 0.6, 1916, 0.8, timeData, x);
-    return Rocket.LaunchUntilMax();
+    var tree1 = new Tree<int>(node);
+
+    // Tree 2 (root: 1)
+    var root = new TreeNode<int>(1).AddChild(new TreeNode<int>(70)).AddChild(new TreeNode<int>(61));
+
+    var tree2 = new Tree<int>(root);
+
+    // Tree 3 (root: 30)
+    root = new TreeNode<int>(30).AddChild(new TreeNode<int>(96)).AddChild(new TreeNode<int>(9));
+
+    var tree3 = new Tree<int>(root);
+
+    // Tree4 (root: 150)
+    root = new TreeNode<int>(150)
+        .AddChild(tree3.Root)
+        .AddChild(new TreeNode<int>(5))
+        .AddChild(new TreeNode<int>(11));
+
+    var tree4 = new Tree<int>(root);
+
+    // Tree 5 (root: 100)
+    root = new TreeNode<int>(100).AddChild(tree1.Root).AddChild(tree2.Root).AddChild(tree4.Root);
+
+    var tree5 = new Tree<int>(root);
+
+    return tree5;
 }
-
-var sw = new Stopwatch();
-sw.Start();
-
-List<double[]> bounds = new();
-
-var bound = new double[] { 0, 3500 };
-bounds.Add(bound);
-bound = new double[] { 0, 3500 };
-bounds.Add(bound);
-
-double Restriction(double[] x)
-{
-    return -1.0;
-}
-
-var diffEvolution = new DiffEvolution(LaunchFunction, Restriction, 200, bounds);
-var sol = diffEvolution.Optimize(4_000);
-sw.Stop();
-for (int i = 0; i < sol.Length - 1; i++)
-{
-    WriteLine($"{sol[i]} : {sol[i + 1]}");
-}
-WriteLine($"Duration: {sw.Elapsed}");

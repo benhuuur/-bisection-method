@@ -1,6 +1,6 @@
 using System;
 
-namespace AIContinuous.Nuenv;
+namespace AulasAI.Nuenv;
 
 public static class Interp1D
 {
@@ -19,7 +19,7 @@ public static class Interp1D
         var index = Search.BinarySearch(x, query);
 
         return y[index]
-            + ((y[index] - y[index - 1]) / (x[index] - x[index - 1])) * (query - x[index]);
+            + (y[index] - y[index - 1]) / (x[index] - x[index - 1]) * (query - x[index]);
     }
 
     public static double CubicSpline(double[] x, double[] y, double query, bool checkBounds = true)
@@ -82,8 +82,8 @@ public static class Interp1D
 
         var index = Search.BinarySearch(x, query);
 
-        var zeta = Math.Log(y[index] / y[index - 1]) / (x[index] - x[index - 1]);
+        var zeta = System.Math.Log(y[index] / y[index - 1]) / (x[index] - x[index - 1]);
 
-        return y[index - 1] * Math.Exp(zeta * (query - x[index - 1]));
+        return y[index - 1] * System.Math.Exp(zeta * (query - x[index - 1]));
     }
 }

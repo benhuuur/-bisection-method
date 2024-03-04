@@ -1,6 +1,6 @@
-using AIContinuous.Nuenv;
+using AulasAI.Nuenv;
 
-namespace AIContinuous.Rocket;
+namespace AulasAI.Rocket;
 
 public static class Atmosphere
 {
@@ -64,11 +64,15 @@ public static class Atmosphere
         8.2130e-8
     };
 
-    public static double Temperature(double height) =>
-        Interp1D.Linear(HeightData, TemperatureData, height, true);
+    public static double Temperature(double height)
+    {
+        return Interp1D.Linear(HeightData, TemperatureData, height, true);
+    }
 
-    public static double Pressure(double height) =>
-        Interp1D.Exponential(HeightData, PressureData, height, true);
+    public static double Pressure(double height)
+    {
+        return Interp1D.Exponential(HeightData, PressureData, height, true);
+    }
 
     public static double Density(double height)
     {

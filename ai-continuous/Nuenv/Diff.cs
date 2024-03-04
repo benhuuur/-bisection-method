@@ -1,20 +1,11 @@
 using System;
 
-namespace AIContinuous;
+namespace AulasAI.Nuenv;
 
 public static class Diff
 {
-    public static double Differentiate2P(
-        Func<double, double> function,
-        double x,
-        double h = 1e-2
-    ) => (function(x + h) - function(x)) / h;
-
-    public static double Differentiate3P(
-        Func<double, double> function,
-        double x,
-        double h = 1e-2
-    ) => (function(x + h) - function(x - h)) / (2.0 * h);
+    public static double Differentiate(Func<double, double> function, double x, double h = 1e-2) =>
+        (function(x + h) - function(x - h)) / (2.0 * h);
 
     public static double Differentiate5P(
         Func<double, double> function,
