@@ -126,7 +126,7 @@ public class Solver
         {
             var currNode = queue.Dequeue();
             currNode.Visited = true;
-            
+
             if (currNode == goal)
                 break;
 
@@ -191,17 +191,18 @@ public class Solver
                     prev[neighbour] = null!;
                 }
 
-                var dx = neighbour.X - goal.X;
-                var dy = neighbour.Y - goal.Y;
-
-                var penalty = dx * dx + dy * dy;
-                var newWeight = dist[currNode] + 1 + penalty;
+                var newWeight = dist[currNode] + 1;
 
                 if (newWeight < dist[neighbour])
                 {
+                    var dx = neighbour.X - goal.X;
+                    var dy = neighbour.Y - goal.Y;
+
+                    var penalty = MathF.Sqrt(dx * dx + dy * dy);
+
                     dist[neighbour] = newWeight;
                     prev[neighbour] = currNode;
-                    queue.Enqueue(neighbour, newWeight);
+                    queue.Enqueue(neighbour, newWeight + penalty);
                 }
             }
         }
